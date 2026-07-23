@@ -54,8 +54,8 @@
                 </div>
                 
                 <div class="flex items-center gap-3 w-full md:w-auto">
-                    <label class="font-bold text-gray-700 text-sm whitespace-nowrap">PTO Accelerator %:</label>
-                    <input type="number" id="pto-acc" class="calc-input border rounded p-2 text-center text-sm font-semibold w-28 bg-gray-50 border-gray-300" value="0.00" step="0.5" min="0">
+                    <label class="font-bold text-gray-700 text-sm whitespace-nowrap" id="pto-label">PTO Accelerator %:</label>
+                    <input type="number" id="pto-acc" class="calc-input border rounded p-2 text-center text-sm font-semibold w-28 bg-gray-50 border-gray-300" value="0" step="5" min="0">
                 </div>
             </div>
 
@@ -126,7 +126,7 @@
                     </div>
                     <div class="flex justify-between items-center font-bold text-sm">
                         <span>M1 Goal</span>
-                        <input type="number" id="m1-goal" class="calc-input w-24 border rounded p-1 text-center bg-gray-50 font-bold" value="360" min="1">
+                        <input type="number" id="m1-goal" class="calc-input w-24 border rounded p-1 text-center bg-gray-50 font-bold" value="0" min="0">
                     </div>
                 </div>
             </div>
@@ -171,7 +171,7 @@
                     </div>
                     <div class="flex justify-between items-center font-bold text-sm">
                         <span>M2 Goal</span>
-                        <input type="number" id="m2-goal" class="calc-input w-24 border rounded p-1 text-center bg-gray-50 font-bold" value="270" min="1">
+                        <input type="number" id="m2-goal" class="calc-input w-24 border rounded p-1 text-center bg-gray-50 font-bold" value="0" min="0">
                     </div>
                 </div>
             </div>
@@ -216,7 +216,7 @@
                     </div>
                     <div class="flex justify-between items-center font-bold text-sm">
                         <span>M3 Goal</span>
-                        <input type="number" id="m3-goal" class="calc-input w-24 border rounded p-1 text-center bg-gray-50 font-bold" value="180" min="1">
+                        <input type="number" id="m3-goal" class="calc-input w-24 border rounded p-1 text-center bg-gray-50 font-bold" value="0" min="0">
                     </div>
                 </div>
             </div>
@@ -430,7 +430,22 @@
         function calculate() {
             const roleKey = document.getElementById('role-select').value;
             const role = ROLES[roleKey];
-            const ptoAcc = getVal('pto-acc');
+            
+            // Handle PTO Field disabled state for Leaders
+            const ptoInput = document.getElementById('pto-acc');
+            const ptoLabel = document.getElementById('pto-label');
+            if (role.type === 'leader') {
+                ptoInput.value = "0";
+                ptoInput.disabled = true;
+                ptoInput.classList.add('bg-gray-200', 'cursor-not-allowed', 'text-gray-400');
+                ptoLabel.classList.add('text-gray-400');
+            } else {
+                ptoInput.disabled = false;
+                ptoInput.classList.remove('bg-gray-200', 'cursor-not-allowed', 'text-gray-400');
+                ptoLabel.classList.remove('text-gray-400');
+            }
+            
+            const ptoAcc = parseFloat(ptoInput.value) || 0;
 
             setTxt('curves-title', role.title);
             setTxt('total-tic-display', `$${(role.m1 + role.m2 + role.m3).toFixed(2)}`);
@@ -443,8 +458,8 @@
             setTxt('m1-upg-sub', (getVal('m1-upg') * 0.50).toFixed(2));
             setTxt('m1-care-sub', (getVal('m1-care') * 0.25).toFixed(2));
             
-            let m1Goal = getVal('m1-goal') || 1;
-            let m1Attain = (m1Net / m1Goal) * 100;
+            let m1Goal = getVal('m1-goal');
+            let m1Attain = m1Goal > 0 ? (m1Net / m1Goal) * 100 : 0;
             let m1Achieve = m1Attain + ptoAcc;
             let m1PayPct = calcM1M2Curve(m1Achieve, role.type);
             let m1Payout = role.m1 * (m1PayPct / 100);
@@ -456,8 +471,8 @@
             setTxt('m2-other-sub', (getVal('m2-other') * 1.00).toFixed(2));
             setTxt('m2-upg-sub', (getVal('m2-upg') * 0.25).toFixed(2));
 
-            let m2Goal = getVal('m2-goal') || 1;
-            let m2Attain = (m2Net / m2Goal) * 100;
+            let m2Goal = getVal('m2-goal');
+            let m2Attain = m2Goal > 0 ? (m2Net / m2Goal) * 100 : 0;
             let m2Achieve = m2Attain + ptoAcc;
             let m2PayPct = calcM1M2Curve(m2Achieve, role.type);
             let m2Payout = role.m2 * (m2PayPct / 100);
@@ -469,8 +484,8 @@
             setTxt('m3-stream-sub', (getVal('m3-stream') * 0.25).toFixed(2));
             setTxt('m3-acc-sub', (getVal('m3-acc') * 0.25).toFixed(2));
 
-            let m3Goal = getVal('m3-goal') || 1;
-            let m3Attain = (m3Net / m3Goal) * 100;
+            let m3Goal = getVal('m3-goal');
+            let m3Attain = m3Goal > 0 ? (m3Net / m3Goal) * 100 : 0;
             let m3Achieve = m3Attain + ptoAcc;
             let m3PayPct = calcM3Curve(m3Achieve, role.type);
             let m3Payout = role.m3 * (m3PayPct / 100);
