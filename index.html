@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retail Commission Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#5e22d9',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 p-6 font-sans">
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- Header / Summary -->
+        <div class="bg-white p-6 rounded-lg shadow flex flex-col md:flex-row justify-between items-center text-xl font-semibold border-t-4 border-brand">
+            <div>Target Incentive (TIC): <span class="text-gray-600">$1,454.16</span></div>
+            <div>Total Payout: <span id="total-payout" class="text-green-600 font-bold">$0.00</span></div>
+            <div>% to TIC: <span id="total-tic-pct" class="text-blue-600 font-bold">0.00%</span></div>
+        </div>
+
+        <!-- Calculator Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- M1 Mobile -->
+            <div class="bg-white p-6 rounded-lg shadow border-t-4 border-brand">
+                <h2 class="text-lg font-bold text-brand border-b pb-2 mb-4 text-center">M1 Mobile Achievement</h2>
+                
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between items-center">
+                        <label class="w-1/2">Mobile Plus (x1.25)</label>
+                        <input type="number" id="m1-plus" class="calc-input w-20 border rounded p-1 text-center" value="0" min="0">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <label class="w-1/2">All Other XM (x1.0)</label>
+                        <input type="number" id="m1-other" class="calc-input w-20 border rounded p-1 text-center" value="0" min="0">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <label class="w-1/2">Device Upgrades (x0.5)</label>
+                        <input type="number" id="m1-upg" class="calc-input w-20 border rounded p-1 text-center" value="0" min="0">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <label class="w-1/2">Tier Upg / XM Care (x0.25)</label>
+                        <input type="number" id="m1-care" class="calc-input w-20 border rounded p-1 text-center" value="0" min="0">
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="flex justify-between items-center font-bold">
+                        <label>M1 Goal</label>
+                        <input type="number" id="m1-goal" class="calc-input w-20 border rounded p-1 text-center bg-gray-50" value="32" min="1">
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-gray-50 p-4 rounded text-sm space-y-2">
+                    <div class="flex justify-between"><span>Net Credits:</span> <span id="m1-net" class="font-bold">0.00</span></div>
+                    <div class="flex justify-between"><span>% to Goal:</span> <span id="m1-pct" class="font-bold text-blue-600">0.00%</span></div>
+                    <div class="flex justify-between"><span>Pay Percent:</span> <span id="m1-pay-pct" class="font-bold text-brand">0.00%</span></div>
+                    <div class="flex justify-between text-base border-t pt-2 mt-2">
+                        <span class="font-bold">Payout:</span> 
+                        <span id="m1-payout" class="font-bold text-green-600">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- M2 Internet -->
+            <div class="bg-white p-6 rounded-lg shadow border-t-4 border-brand">
+                <h2 class="text-lg font-bold text-brand border-b pb-2 mb-4 text-center">M2 Internet Achievement</h2>
+                
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between items-center">
+                        <label class="w-1/2">Gig Internet (x1.25)</label>
+                        <input type="number" id="m2-gig" class="calc-input w-20 border rounded p-1 text-center" value="0" min="0">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <label class="w-1/2">All Other HSI (x1.0)</label>
+                        <input type="number" id="m2-other" class="calc-input w-20 border rounded p-1 text-center" value="0" min="0">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <label class="w-1/2">Tier Upgrades (x0.25)</label>
+                        <input type="number" id="m2-upg" class="calc-input w-20 border rounded p-1 text-center" value="0" min="0">
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="flex justify-between items-center font-bold">
+                        <label>M2 Goal</label>
+                        <input type="number" id="m2-goal" class="calc-input w-20 border rounded p-1 text-center bg-gray-50" value="15" min="1">
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-gray-50 p-4 rounded text-sm space-y-2">
+                    <div class="flex justify-between"><span>Net Credits:</span> <span id="m2-net" class="font-bold">0.00</span></div>
+                    <div class="flex justify-between"><span>% to Goal:</span> <span id="m2-pct" class="font-bold text-blue-600">0.00%</span></div>
+                    <div class="flex justify-between"><span>Pay Percent:</span> <span id="m2-pay-pct" class="font-bold text-brand">0.00%</span></div>
+                    <div class="flex justify-between text-base border-t pt-2 mt-2">
+                        <span class="font-bold">Payout:</span> 
+                        <span id="m2-payout" class="font-bold text-green-600">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- M3 All Other -->
+            <div class="bg-white p-6 rounded-lg shadow border-t-4 border-brand">
+                <h2 class="text-lg font-bold text-brand border-b pb-2 mb-4 text-center">M3 Base Achievement</h2>
+                
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between items-center">
+                        <label class="w-1/2">Ent/Home/Voice (x1.0)</label>
+                        <input type="number" id="m3-ent" class="calc-input w-20 border rounded p-1 text-center" value="0" min="0">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <label class="w-1/2">StreamSaver (x0.25)</label>
+                        <input type="number" id="m3-stream" class="calc-input w-20 border rounded p-1 text-center" value="0" min="0">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <label class="w-1/2">Accessories (x0.25)</label>
+                        <input type="number" id="m3-acc" class="calc-input w-20 border rounded p-1 text-center" value="0" min="0">
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="flex justify-between items-center font-bold">
+                        <label>M3 Goal</label>
+                        <input type="number" id="m3-goal" class="calc-input w-20 border rounded p-1 text-center bg-gray-50" value="10" min="1">
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-gray-50 p-4 rounded text-sm space-y-2">
+                    <div class="flex justify-between"><span>Net Credits:</span> <span id="m3-net" class="font-bold">0.00</span></div>
+                    <div class="flex justify-between"><span>% to Goal:</span> <span id="m3-pct" class="font-bold text-blue-600">0.00%</span></div>
+                    <div class="flex justify-between"><span>Pay Percent:</span> <span id="m3-pay-pct" class="font-bold text-brand">0.00%</span></div>
+                    <div class="flex justify-between text-base border-t pt-2 mt-2">
+                        <span class="font-bold">Payout:</span> 
+                        <span id="m3-payout" class="font-bold text-green-600">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const TIC_M1 = 872.50;
+        const TIC_M2 = 290.83;
+        const TIC_M3 = 290.83;
+        const TIC_TOTAL = TIC_M1 + TIC_M2 + TIC_M3;
+
+        function getVal(id) {
+            return parseFloat(document.getElementById(id).value) || 0;
+        }
+
+        function setTxt(id, val, prefix = "", suffix = "") {
+            document.getElementById(id).innerText = `${prefix}${val.toFixed(2)}${suffix}`;
+        }
+
+        function calcM1M2Curve(pct) {
+            if (pct <= 60) return pct * 0.333333;
+            if (pct <= 80) return 20 + (pct - 60) * 3;
+            if (pct <= 110) return 80 + (pct - 80) * 1;
+            if (pct <= 225) return 110 + (pct - 110) * 2;
+            return 340 + (pct - 225) * 1;
+        }
+
+        function calcM3Curve(pct) {
+            if (pct <= 30) return pct * 0.666667;
+            if (pct <= 100) return 20 + (pct - 30) * 1.142857;
+            return 100 + (pct - 100) * 1;
+        }
+
+        function calculate() {
+            // M1 Math
+            let m1Net = (getVal('m1-plus') * 1.25) + (getVal('m1-other') * 1.0) + (getVal('m1-upg') * 0.5) + (getVal('m1-care') * 0.25);
+            let m1Goal = getVal('m1-goal') || 1;
+            let m1Pct = (m1Net / m1Goal) * 100;
+            let m1PayPct = calcM1M2Curve(m1Pct);
+            let m1Payout = TIC_M1 * (m1PayPct / 100);
+
+            // M2 Math
+            let m2Net = (getVal('m2-gig') * 1.25) + (getVal('m2-other') * 1.0) + (getVal('m2-upg') * 0.25);
+            let m2Goal = getVal('m2-goal') || 1;
+            let m2Pct = (m2Net / m2Goal) * 100;
+            let m2PayPct = calcM1M2Curve(m2Pct);
+            let m2Payout = TIC_M2 * (m2PayPct / 100);
+
+            // M3 Math
+            let m3Net = (getVal('m3-ent') * 1.0) + (getVal('m3-stream') * 0.25) + (getVal('m3-acc') * 0.25);
+            let m3Goal = getVal('m3-goal') || 1;
+            let m3Pct = (m3Net / m3Goal) * 100;
+            let m3PayPct = calcM3Curve(m3Pct);
+            let m3Payout = TIC_M3 * (m3PayPct / 100);
+
+            // Totals
+            let totalPayout = m1Payout + m2Payout + m3Payout;
+            let totalTicPct = (totalPayout / TIC_TOTAL) * 100;
+
+            // DOM Updates
+            setTxt('m1-net', m1Net); setTxt('m1-pct', m1Pct, "", "%"); setTxt('m1-pay-pct', m1PayPct, "", "%"); setTxt('m1-payout', m1Payout, "$");
+            setTxt('m2-net', m2Net); setTxt('m2-pct', m2Pct, "", "%"); setTxt('m2-pay-pct', m2PayPct, "", "%"); setTxt('m2-payout', m2Payout, "$");
+            setTxt('m3-net', m3Net); setTxt('m3-pct', m3Pct, "", "%"); setTxt('m3-pay-pct', m3PayPct, "", "%"); setTxt('m3-payout', m3Payout, "$");
+            
+            setTxt('total-payout', totalPayout, "$");
+            setTxt('total-tic-pct', totalTicPct, "", "%");
+        }
+
+        // Attach listeners
+        document.querySelectorAll('.calc-input').forEach(input => {
+            input.addEventListener('input', calculate);
+        });
+
+        // Initial calculation
+        calculate();
+    </script>
+</body>
+</html>
