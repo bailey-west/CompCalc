@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CompCalc</title>
+    <title>Unified Sales Operating Framework Calculator</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -231,7 +231,7 @@
                         <th class="text-left py-2">Measure</th>
                         <th class="py-2">Net Credits</th>
                         <th class="py-2">÷</th>
-                        <th class="py-2">Adj. Goal</th>
+                        <th class="py-2">Goal</th>
                         <th class="py-2">=</th>
                         <th class="py-2">Achievement</th>
                         <th class="py-2">→</th>
@@ -247,7 +247,7 @@
                         <td class="text-left py-3 text-brand font-bold">M1 - Mobile Achievement</td>
                         <td id="tbl-m1-net">0.00</td>
                         <td class="text-gray-400">÷</td>
-                        <td id="tbl-m1-adjgoal">0.00</td>
+                        <td id="tbl-m1-goal">0.00</td>
                         <td class="text-gray-400">=</td>
                         <td id="tbl-m1-achieve">0.00%</td>
                         <td class="text-gray-400">→</td>
@@ -261,7 +261,7 @@
                         <td class="text-left py-3 text-brand font-bold">M2 - Internet Achievement</td>
                         <td id="tbl-m2-net">0.00</td>
                         <td class="text-gray-400">÷</td>
-                        <td id="tbl-m2-adjgoal">0.00</td>
+                        <td id="tbl-m2-goal">0.00</td>
                         <td class="text-gray-400">=</td>
                         <td id="tbl-m2-achieve">0.00%</td>
                         <td class="text-gray-400">→</td>
@@ -275,7 +275,7 @@
                         <td class="text-left py-3 text-brand font-bold">M3 - Base Achievement</td>
                         <td id="tbl-m3-net">0.00</td>
                         <td class="text-gray-400">÷</td>
-                        <td id="tbl-m3-adjgoal">0.00</td>
+                        <td id="tbl-m3-goal">0.00</td>
                         <td class="text-gray-400">=</td>
                         <td id="tbl-m3-achieve">0.00%</td>
                         <td class="text-gray-400">→</td>
@@ -284,6 +284,10 @@
                         <td id="tbl-m3-opp">$0.00</td>
                         <td class="text-gray-400">=</td>
                         <td id="tbl-m3-payout" class="text-right text-green-600 font-bold">$0.00</td>
+                    </tr>
+                    <tr class="bg-purple-50">
+                        <td colspan="11" class="text-right py-3 font-bold text-gray-700">PTO Accelerator Bonus (<span id="tbl-pto-accel">0.00%</span> of TIC):</td>
+                        <td id="tbl-pto-bonus" class="text-right text-green-600 font-bold">+$0.00</td>
                     </tr>
                 </tbody>
             </table>
@@ -446,10 +450,10 @@
             }
             
             const ptoAcc = parseFloat(ptoInput.value) || 0;
-            const ptoMultiplier = 1 - (ptoAcc / 100);
+            const totalTIC = role.m1 + role.m2 + role.m3;
 
             setTxt('curves-title', role.title);
-            setTxt('total-tic-display', `$${(role.m1 + role.m2 + role.m3).toFixed(2)}`);
+            setTxt('total-tic-display', `$${totalTIC.toFixed(2)}`);
             updateChartCurves(role.type);
 
             // M1 Process
@@ -460,8 +464,7 @@
             setTxt('m1-care-sub', (getVal('m1-care') * 0.25).toFixed(2));
             
             let m1Goal = getVal('m1-goal');
-            let m1AdjGoal = m1Goal * ptoMultiplier;
-            let m1Achieve = m1AdjGoal > 0 ? (m1Net / m1AdjGoal) * 100 : 0;
+            let m1Achieve = m1Goal > 0 ? (m1Net / m1Goal) * 100 : 0;
             let m1PayPct = calcM1M2Curve(m1Achieve, role.type);
             let m1Payout = role.m1 * (m1PayPct / 100);
             setTxt('m1-net', m1Net.toFixed(2));
@@ -473,8 +476,7 @@
             setTxt('m2-upg-sub', (getVal('m2-upg') * 0.25).toFixed(2));
 
             let m2Goal = getVal('m2-goal');
-            let m2AdjGoal = m2Goal * ptoMultiplier;
-            let m2Achieve = m2AdjGoal > 0 ? (m2Net / m2AdjGoal) * 100 : 0;
+            let m2Achieve = m2Goal > 0 ? (m2Net / m2Goal) * 100 : 0;
             let m2PayPct = calcM1M2Curve(m2Achieve, role.type);
             let m2Payout = role.m2 * (m2PayPct / 100);
             setTxt('m2-net', m2Net.toFixed(2));
@@ -486,20 +488,24 @@
             setTxt('m3-acc-sub', (getVal('m3-acc') * 0.25).toFixed(2));
 
             let m3Goal = getVal('m3-goal');
-            let m3AdjGoal = m3Goal * ptoMultiplier;
-            let m3Achieve = m3AdjGoal > 0 ? (m3Net / m3AdjGoal) * 100 : 0;
+            let m3Achieve = m3Goal > 0 ? (m3Net / m3Goal) * 100 : 0;
             let m3PayPct = calcM3Curve(m3Achieve, role.type);
             let m3Payout = role.m3 * (m3PayPct / 100);
             setTxt('m3-net', m3Net.toFixed(2));
 
             // Update Tables
-            setTxt('tbl-m1-net', m1Net.toFixed(2)); setTxt('tbl-m1-adjgoal', m1AdjGoal.toFixed(2)); setTxt('tbl-m1-achieve', m1Achieve.toFixed(2) + '%'); setTxt('tbl-m1-paypct', m1PayPct.toFixed(2) + '%'); setTxt('tbl-m1-opp', `$${role.m1.toFixed(2)}`); setTxt('tbl-m1-payout', `$${m1Payout.toFixed(2)}`);
-            setTxt('tbl-m2-net', m2Net.toFixed(2)); setTxt('tbl-m2-adjgoal', m2AdjGoal.toFixed(2)); setTxt('tbl-m2-achieve', m2Achieve.toFixed(2) + '%'); setTxt('tbl-m2-paypct', m2PayPct.toFixed(2) + '%'); setTxt('tbl-m2-opp', `$${role.m2.toFixed(2)}`); setTxt('tbl-m2-payout', `$${m2Payout.toFixed(2)}`);
-            setTxt('tbl-m3-net', m3Net.toFixed(2)); setTxt('tbl-m3-adjgoal', m3AdjGoal.toFixed(2)); setTxt('tbl-m3-achieve', m3Achieve.toFixed(2) + '%'); setTxt('tbl-m3-paypct', m3PayPct.toFixed(2) + '%'); setTxt('tbl-m3-opp', `$${role.m3.toFixed(2)}`); setTxt('tbl-m3-payout', `$${m3Payout.toFixed(2)}`);
+            setTxt('tbl-m1-net', m1Net.toFixed(2)); setTxt('tbl-m1-goal', m1Goal.toFixed(2)); setTxt('tbl-m1-achieve', m1Achieve.toFixed(2) + '%'); setTxt('tbl-m1-paypct', m1PayPct.toFixed(2) + '%'); setTxt('tbl-m1-opp', `$${role.m1.toFixed(2)}`); setTxt('tbl-m1-payout', `$${m1Payout.toFixed(2)}`);
+            setTxt('tbl-m2-net', m2Net.toFixed(2)); setTxt('tbl-m2-goal', m2Goal.toFixed(2)); setTxt('tbl-m2-achieve', m2Achieve.toFixed(2) + '%'); setTxt('tbl-m2-paypct', m2PayPct.toFixed(2) + '%'); setTxt('tbl-m2-opp', `$${role.m2.toFixed(2)}`); setTxt('tbl-m2-payout', `$${m2Payout.toFixed(2)}`);
+            setTxt('tbl-m3-net', m3Net.toFixed(2)); setTxt('tbl-m3-goal', m3Goal.toFixed(2)); setTxt('tbl-m3-achieve', m3Achieve.toFixed(2) + '%'); setTxt('tbl-m3-paypct', m3PayPct.toFixed(2) + '%'); setTxt('tbl-m3-opp', `$${role.m3.toFixed(2)}`); setTxt('tbl-m3-payout', `$${m3Payout.toFixed(2)}`);
 
-            let totalPayout = m1Payout + m2Payout + m3Payout;
+            // Apply PTO Bonus Directly to Final Payout
+            let ptoBonus = totalTIC * (ptoAcc / 100);
+            setTxt('tbl-pto-accel', ptoAcc.toFixed(2) + '%');
+            setTxt('tbl-pto-bonus', `+$${ptoBonus.toFixed(2)}`);
+
+            let totalPayout = m1Payout + m2Payout + m3Payout + ptoBonus;
             setTxt('total-payout', `$${totalPayout.toFixed(2)}`);
-            setTxt('total-tic-pct', ((totalPayout / (role.m1 + role.m2 + role.m3)) * 100).toFixed(2) + '%');
+            setTxt('total-tic-pct', ((totalPayout / totalTIC) * 100).toFixed(2) + '%');
 
             // Render Graphs
             updateChartPoint(chartM1Instance, m1Achieve, m1PayPct);
